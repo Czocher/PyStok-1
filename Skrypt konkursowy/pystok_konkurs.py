@@ -9,8 +9,6 @@ import os
 
 participants = [
     # Lista uczestników zarejestrowanych
-    1,
-    2
 ]
 
 
