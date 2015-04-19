@@ -17,7 +17,7 @@ class WinnerGUI(object):
 
     def __init__(self, fontsize):
         self.root = tk.Tk()
-        self.root.attributes('-zoomed', True)
+        self.root.state('zoomed')
         self.stop = False
         self.fontsize = fontsize
         self.bind_events()
