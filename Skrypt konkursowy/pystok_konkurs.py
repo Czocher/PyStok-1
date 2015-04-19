@@ -1,10 +1,10 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import thread
-import time
+import curses
+import locale
 import random
-import sys
-import os
+import time
 
 
 participants = [
@@ -12,29 +12,46 @@ participants = [
 ]
 
 
-def input_thread(L):
-    raw_input()
+def winner(stdscr):
+    '''Show a random participant from the list,
+    stop when a button is pressed.'''
 
-    L.append(None)
+    stdscr.nodelay(True)
+
+    max_y, max_x = stdscr.getmaxyx()
+    winner = 'The winner is: '
+    pos_x = max_x / 2 + len(winner) / 2
+    pos_y = max_y / 2
 
 
-def the_winer_is():
-    L = []
+    stdscr.addstr(pos_y, pos_x - len(winner), winner)
 
-    thread.start_new_thread(input_thread, (L,))
+    while stdscr.getch() == curses.ERR:
+        the_chosen_one = random.choice(participants).encode('utf-8')
 
-    while 1:
+        # Clear the place for the winners name
+        stdscr.hline(pos_y, pos_x, ' ', max_x - pos_x)
+
+        # Print the name
+        stdscr.addstr(pos_y, pos_x, the_chosen_one)
+
+        stdscr.refresh()
         time.sleep(.005)
-       
-        os.system('clear')
 
-        if L:
-            print(u"The winer is:\n\n\t{0}\n".format(random.choice(participants)))
+    stdscr.nodelay(False)
+    stdscr.hline(max_y - 2, 0, '-', max_x)
+    stdscr.addstr(max_y - 1, 0, 'Press enter to finish...')
 
+    while True:
+        inpt = stdscr.getch()
+
+        if inpt == ord('\n') or inpt == curses.KEY_ENTER:
             break
-
-        print(random.choice(participants))
 
 
 if __name__ == '__main__':
-    the_winer_is()
+    if not participants:
+        print 'No participants provided. Finishing.'
+    else:
+        locale.setlocale(locale.LC_ALL, "")
+        curses.wrapper(winner)
